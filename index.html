@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WickHUB.pl • Przerwa Techniczna ❄️</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700;800&family=Unbounded:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-dark: #070d14;
+      --bg-card: rgba(13, 25, 38, 0.72);
+      --border-ice: rgba(165, 243, 252, 0.22);
+      --accent-green: #38ef7d;
+      --accent-ice: #7dd3fc;
+      --accent-ice-glow: rgba(125, 211, 252, 0.35);
+      --text-white: #f0f9ff;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(ellipse at 50% 0%, rgba(56, 189, 248, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 80%, rgba(41, 224, 107, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #070d14 0%, #03070c 100%);
+      color: var(--text-white);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      position: relative;
+      padding: 30px 20px;
+    }
+
+    /* Płótno ze śniegiem */
+    #snow-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Zimowa poświata ambient */
+    .ambient-glow {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow-1 {
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 650px;
+      height: 480px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.3) 0%, transparent 70%);
+      animation: pulseIce 8s ease-in-out infinite alternate;
+    }
+
+    .glow-2 {
+      bottom: -150px;
+      right: 15%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(56, 239, 125, 0.18) 0%, transparent 70%);
+      animation: pulseIce 10s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes pulseIce {
+      0% { transform: scale(0.92); opacity: 0.28; }
+      100% { transform: scale(1.12); opacity: 0.45; }
+    }
+
+    /* Kontener główny */
+    .main-wrapper {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 24px;
+    }
+
+    /* Logo i branding */
+    .logo-container {
+      position: relative;
+      display: inline-block;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .logo-container:hover {
+      transform: scale(1.04) translateY(-3px);
+    }
+
+    .server-logo {
+      width: min(340px, 80vw);
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 15px 35px rgba(56, 189, 248, 0.3)) drop-shadow(0 0 20px rgba(56, 239, 125, 0.2));
+      animation: floatLogo 4.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatLogo {
+      0% { transform: translateY(0px); }
+      100% { transform: translateY(-8px); }
+    }
+
+    /* Badge statusu */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(125, 211, 252, 0.1);
+      border: 1px solid rgba(165, 243, 252, 0.3);
+      padding: 9px 22px;
+      border-radius: 999px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 4px 20px rgba(56, 189, 248, 0.2);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #38ef7d;
+      box-shadow: 0 0 14px #38ef7d;
+      animation: blinkDot 1.6s ease-in-out infinite;
+    }
+
+    @keyframes blinkDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .status-text {
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #bae6fd;
+    }
+
+    /* Nagłówek */
+    .headline {
+      font-family: 'Unbounded', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      text-transform: uppercase;
+    }
+
+    .headline-accent {
+      background: linear-gradient(135deg, #e0f2fe 0%, #7dd3fc 45%, #38ef7d 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+      filter: drop-shadow(0 2px 16px rgba(56, 189, 248, 0.4));
+    }
+
+    /* Karta licznika - szron / mróz */
+    .timer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-ice);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-radius: 24px;
+      padding: 28px 36px;
+      width: 100%;
+      max-width: 720px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .timer-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #7dd3fc, transparent);
+    }
+
+    .timer-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #bae6fd;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+    }
+
+    .timer-title i {
+      color: #38ef7d;
+    }
+
+    .countdown-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .time-slot {
+      background: rgba(3, 11, 20, 0.55);
+      border: 1px solid rgba(165, 243, 252, 0.12);
+      border-radius: 16px;
+      padding: 16px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .time-slot:hover {
+      border-color: rgba(125, 211, 252, 0.45);
+      transform: translateY(-2px);
+      background: rgba(56, 189, 248, 0.08);
+      box-shadow: 0 4px 18px rgba(56, 189, 248, 0.15);
+    }
+
+    .time-num {
+      font-family: 'Unbounded', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.7rem);
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1;
+      text-shadow: 0 2px 16px rgba(125, 211, 252, 0.45);
+    }
+
+    .time-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-top: 8px;
+    }
+
+    /* Sekcja Discorda i Wumpusa */
+    .discord-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      margin-top: 6px;
+    }
+
+    .wumpus-link {
+      display: inline-block;
+      position: relative;
+      cursor: pointer;
+      border-radius: 24px;
+      outline: none;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .wumpus-img {
+      width: min(150px, 40vw);
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 12px 28px rgba(88, 101, 242, 0.45)) drop-shadow(0 0 15px rgba(125, 211, 252, 0.3));
+      animation: floatWumpus 4s ease-in-out infinite alternate;
+      transition: filter 0.3s ease;
+    }
+
+    .wumpus-link:hover .wumpus-img {
+      filter: drop-shadow(0 18px 36px rgba(88, 101, 242, 0.8)) drop-shadow(0 0 25px rgba(125, 211, 252, 0.5)) brightness(1.08);
+      animation-play-state: paused;
+    }
+
+    .wumpus-link:hover {
+      transform: scale(1.1) translateY(-6px) rotate(-2deg);
+    }
+
+    @keyframes floatWumpus {
+      0% { transform: translateY(0px) rotate(0deg); }
+      100% { transform: translateY(-10px) rotate(2deg); }
+    }
+
+    .discord-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, #5865F2 0%, #4752c4 100%);
+      color: #ffffff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      padding: 14px 34px;
+      border-radius: 999px;
+      text-decoration: none;
+      box-shadow: 0 10px 30px rgba(88, 101, 242, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .discord-btn:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 16px 40px rgba(88, 101, 242, 0.6);
+      background: linear-gradient(135deg, #6975f7 0%, #5865F2 100%);
+    }
+
+    .discord-btn i {
+      font-size: 1.35rem;
+    }
+
+    /* Stopka */
+    footer {
+      position: relative;
+      z-index: 2;
+      margin-top: 30px;
+      font-size: 0.85rem;
+      color: rgba(240, 249, 255, 0.45);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    footer a {
+      color: #7dd3fc;
+      text-decoration: none;
+    }
+
+    @media (max-width: 600px) {
+      .countdown-grid {
+        gap: 8px;
+      }
+      .time-slot {
+        padding: 12px 6px;
+      }
+      .timer-card {
+        padding: 22px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Animowany padający śnieg -->
+  <canvas id="snow-canvas"></canvas>
+
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <div class="main-wrapper">
+    <!-- Logo serwera -->
+    <div class="logo-container">
+      <img src="logo.png" alt="WickHUB Logo" class="server-logo">
+    </div>
+
+    <!-- Status -->
+    <div class="status-badge">
+      <span class="status-dot"></span>
+      <span class="status-text">❄️ Przerwa Techniczna</span>
+    </div>
+
+    <!-- Główny nagłówek (usunięty opis pod spodem) -->
+    <div>
+      <h1 class="headline">Trwają prace <span class="headline-accent">techniczne</span></h1>
+    </div>
+
+    <!-- Karta z licznikiem do dzisiaj do 20:00 -->
+    <div class="timer-card">
+      <div class="timer-title">
+        <i class="fa-regular fa-clock"></i> Planowany start dzisiaj o 20:00
+      </div>
+      <div class="countdown-grid">
+        <div class="time-slot">
+          <span class="time-num" id="hours">00</span>
+          <span class="time-label">Godzin</span>
+        </div>
+        <div class="time-slot">
+          <span class="time-num" id="minutes">00</span>
+          <span class="time-label">Minut</span>
+        </div>
+        <div class="time-slot">
+          <span class="time-num" id="seconds">00</span>
+          <span class="time-label">Sekund</span>
+        </div>
+        <div class="time-slot">
+          <span class="time-num" id="millis">00</span>
+          <span class="time-label">Milis</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wumpus z przekierowaniem do Discorda -->
+    <div class="discord-section">
+      <a href="https://discord.gg/wickhub" target="_blank" rel="noopener noreferrer" class="wumpus-link" title="Kliknij Wumpusa, aby wejść na Discorda!">
+        <img src="wumpus.png" alt="Wumpus Discord" class="wumpus-img">
+      </a>
+      <a href="https://discord.gg/wickhub" target="_blank" rel="noopener noreferrer" class="discord-btn">
+        <i class="fa-brands fa-discord"></i> Dołącz na Discorda
+      </a>
+    </div>
+
+    <footer>
+      <span>&copy; 2026 <strong>WickHUB.pl</strong> • Wszelkie prawa zastrzeżone</span>
+    </footer>
+  </div>
+
+  <script>
+    // System padającego śniegu
+    const canvas = document.getElementById('snow-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const flakes = [];
+    const numFlakes = Math.min(width > 768 ? 95 : 45, 120);
+
+    for (let i = 0; i < numFlakes; i++) {
+      flakes.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 2.8 + 0.8,
+        speedY: Math.random() * 1.2 + 0.5,
+        speedX: (Math.random() - 0.5) * 0.6,
+        opacity: Math.random() * 0.6 + 0.3,
+        swing: Math.random() * Math.PI * 2,
+        swingSpeed: Math.random() * 0.02 + 0.01
+      });
+    }
+
+    function renderSnow() {
+      ctx.clearRect(0, 0, width, height);
+
+      flakes.forEach((flake) => {
+        flake.swing += flake.swingSpeed;
+        flake.y += flake.speedY;
+        flake.x += flake.speedX + Math.sin(flake.swing) * 0.45;
+
+        if (flake.y > height) {
+          flake.y = -5;
+          flake.x = Math.random() * width;
+        }
+        if (flake.x > width) flake.x = 0;
+        if (flake.x < 0) flake.x = width;
+
+        ctx.beginPath();
+        ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(240, 249, 255, ${flake.opacity})`;
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = 'rgba(186, 230, 253, 0.7)';
+        ctx.fill();
+      });
+
+      requestAnimationFrame(renderSnow);
+    }
+    renderSnow();
+
+    // Obliczanie czasu do dzisiaj do godziny 20:00
+    function getTargetTime() {
+      const now = new Date();
+      const target = new Date();
+      target.setHours(20, 0, 0, 0);
+
+      if (now.getTime() > target.getTime()) {
+        target.setDate(target.getDate() + 1);
+      }
+      return target.getTime();
+    }
+
+    const targetTimestamp = getTargetTime();
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const diff = targetTimestamp - now;
+
+      if (diff <= 0) {
+        document.getElementById('hours').innerText = '00';
+        document.getElementById('minutes').innerText = '00';
+        document.getElementById('seconds').innerText = '00';
+        document.getElementById('millis').innerText = '00';
+        return;
+      }
+
+      const hours = Math.floor((diff / (1000 * 60 * 60)));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      const millis = Math.floor((diff % 1000) / 10);
+
+      document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+      document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
+      document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
+      document.getElementById('millis').innerText = String(millis).padStart(2, '0');
+    }
+
+    setInterval(updateCountdown, 40);
+    updateCountdown();
+  </script>
+</body>
+</html>
